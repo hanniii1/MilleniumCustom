@@ -1983,7 +1983,9 @@
                 multi = options.multi or false;
                 scrolling = options.scrolling or false;
 
-                width = options.width or 130;
+                compact = options.compact == true;
+                width = options.width or (options.compact and 112 or 130);
+                height = options.height or (options.compact and 20 or 22);
 
                 -- Ignore these 
                 open = false;
@@ -2085,7 +2087,7 @@
                         Parent = items[ "right_components" ];
                         Name = "\0";
                         Position = dim2(1, 0, 0, 0);
-                        Size = dim2(0, cfg.width, 0, 22);
+                        Size = dim2(0, cfg.width, 0, cfg.height);
                         BorderSizePixel = 0;
                         TextSize = 14;
                         BackgroundColor3 = rgb(52, 53, 58)
@@ -2093,14 +2095,7 @@
                     
                     library:create( "UICorner" , {
                         Parent = items[ "dropdown" ];
-                        CornerRadius = dim(0, 6)
-                    });
-
-                    library:create( "UIStroke" , {
-                        Parent = items[ "dropdown" ];
-                        Color = rgb(96, 98, 106);
-                        Transparency = 0.02;
-                        ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
+                        CornerRadius = dim(0, cfg.compact and 5 or 6)
                     });
                     
                     items[ "sub_text" ] = library:create( "TextLabel" , {
@@ -2110,21 +2105,21 @@
                         Text = "awdawdawdawdawdawdawdaw";
                         Parent = items[ "dropdown" ];
                         Name = "\0";
-                        Size = dim2(1, -18, 0, 0);
+                        Size = dim2(1, -22, 1, 0);
                         BorderSizePixel = 0;
                         BackgroundTransparency = 1;
                         TextXAlignment = Enum.TextXAlignment.Left;
+                        TextYAlignment = Enum.TextYAlignment.Center;
                         TextTruncate = Enum.TextTruncate.AtEnd;
-                        AutomaticSize = Enum.AutomaticSize.Y;
+                        AutomaticSize = Enum.AutomaticSize.None;
                         TextSize = 14;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
                     
                     library:create( "UIPadding" , {
                         Parent = items[ "sub_text" ];
-                        PaddingTop = dim(0, 1);
-                        PaddingRight = dim(0, 5);
-                        PaddingLeft = dim(0, 5)
+                        PaddingRight = dim(0, 6);
+                        PaddingLeft = dim(0, 8)
                     });
                     
                     items[ "indicator" ] = library:create( "ImageLabel" , {
@@ -2134,9 +2129,9 @@
                         AnchorPoint = vec2(1, 0.5);
                         Image = "rbxassetid://101025591575185";
                         BackgroundTransparency = 1;
-                        Position = dim2(1, -7, 0.5, 0);
+                        Position = dim2(1, -8, 0.5, 0);
                         Name = "\0";
-                        Size = dim2(0, 13, 0, 13);
+                        Size = dim2(0, cfg.compact and 11 or 12, 0, cfg.compact and 11 or 12);
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
@@ -3442,7 +3437,6 @@
                     return {
                         background = cfg.color,
                         text = rgb(245, 245, 245),
-                        stroke = rgb(255, 255, 255),
                     }
                 end
 
@@ -3450,26 +3444,22 @@
                     return {
                         background = themes.preset.accent,
                         text = rgb(22, 22, 24),
-                        stroke = rgb(255, 210, 153),
                     }
                 elseif cfg.variant == "destructive" then
                     return {
                         background = rgb(174, 58, 58),
                         text = rgb(255, 242, 242),
-                        stroke = rgb(236, 137, 137),
                     }
                 elseif cfg.variant == "tertiary" then
                     return {
                         background = rgb(40, 41, 46),
                         text = rgb(198, 200, 207),
-                        stroke = rgb(94, 96, 104),
                     }
                 end
 
                 return {
                     background = rgb(52, 53, 58),
                     text = rgb(245, 245, 245),
-                    stroke = rgb(86, 88, 96),
                 }
             end
 
@@ -3506,14 +3496,7 @@
                 
                 library:create( "UICorner" , {
                     Parent = items[ "button" ];
-                    CornerRadius = dim(0, cfg.compact and 8 or 10)
-                });
-
-                library:create( "UIStroke" , {
-                    Parent = items[ "button" ];
-                    Color = palette.stroke;
-                    Transparency = cfg.variant == "tertiary" and 0.25 or 0.1;
-                    ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
+                    CornerRadius = dim(0, cfg.compact and 8 or 9)
                 });
                 
                 items[ "name" ] = library:create( "TextLabel" , {
@@ -3525,8 +3508,10 @@
                     Name = "\0";
                     BackgroundTransparency = 1;
                     Size = dim2(1, 0, 1, 0);
+                    TextXAlignment = Enum.TextXAlignment.Center;
+                    TextYAlignment = Enum.TextYAlignment.Center;
                     BorderSizePixel = 0;
-                    AutomaticSize = Enum.AutomaticSize.XY;
+                    AutomaticSize = Enum.AutomaticSize.None;
                     TextSize = cfg.compact and 13 or 14;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });                          
