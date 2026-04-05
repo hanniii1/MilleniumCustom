@@ -2212,8 +2212,8 @@
 
                 local reserve = cfg.compact and 36 or 40
                 local measured = items[ "sub_text" ].TextBounds.X + reserve
-                local mainWidth = (library.items and library.items.main and library.items.main.AbsoluteSize.X) or 720
-                local maxWidth = math.max(cfg.width, math.floor(mainWidth * 0.34))
+                local rowWidth = (items[ "dropdown_object" ] and items[ "dropdown_object" ].AbsoluteSize.X) or 0
+                local maxWidth = rowWidth > 0 and math.max(cfg.width, math.floor(rowWidth * 0.62)) or math.max(cfg.width, 220)
                 local desired = math.max(cfg.width, math.min(maxWidth, measured))
                 items[ "dropdown" ].Size = dim2(0, desired, 0, cfg.height)
             end
