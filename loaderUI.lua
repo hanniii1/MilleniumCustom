@@ -760,7 +760,7 @@
                     BackgroundTransparency = 1;
                     Position = dim2(0, 196, 0, 56);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -216, 1, -101);
+                    Size = dim2(1, -216, 1, -108);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
@@ -944,7 +944,7 @@
                                     Name = "\0";
                                     Active = true;
                                     BorderColor3 = rgb(0, 0, 0);
-                                    Size = dim2(1, -20, 1, -20);
+                                    Size = dim2(1, -20, 1, -12);
                                     AutomaticCanvasSize = Enum.AutomaticSize.Y;
                                     ScrollingDirection = Enum.ScrollingDirection.Y;
                                     ScrollBarImageColor3 = rgb(44, 44, 46);
@@ -966,7 +966,7 @@
                                 
                                 library:create( "UIPadding" , {
                                     PaddingTop = dim(0, 7);
-                                    PaddingBottom = dim(0, 7);
+                                    PaddingBottom = dim(0, 14);
                                     Parent = multi_items[ "tab" ];
                                     PaddingRight = dim(0, 7);
                                     PaddingLeft = dim(0, 7)
@@ -992,7 +992,7 @@
                                 library:tween(self.items[ "global_fade" ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.4)
                                 
                                 local old_size = page.page.Size
-                                page.page.Size = dim2(1, -20, 1, -20)
+                                page.page.Size = dim2(1, -20, 1, -12)
                             end
 
                             if page then
@@ -1007,7 +1007,7 @@
                             library:tween(data.text, {TextColor3 = rgb(255, 255, 255)})
                             library:tween(data.accent, {BackgroundTransparency = 0})
                             library:tween(data.button, {BackgroundTransparency = 0})
-                            library:tween(data.page, {Size = dim2(1, 0, 1, 0)}, Enum.EasingStyle.Quad, 0.4)
+                            library:tween(data.page, {Size = dim2(1, 0, 1, -6)}, Enum.EasingStyle.Quad, 0.4)
 
                             data.page.Visible = true
                             data.page.Parent = items["tab_holder"]
@@ -1037,7 +1037,7 @@
                         self.items[ "global_fade" ].BackgroundTransparency = 0
                         
                         library:tween(self.items[ "global_fade" ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.4)
-                        selected_tab[ 4 ].Size = dim2(1, -216, 1, -101)
+                        selected_tab[ 4 ].Size = dim2(1, -216, 1, -108)
                     end
 
                     library:tween(selected_tab[ 1 ], {BackgroundTransparency = 1})
@@ -1053,7 +1053,7 @@
                 library:tween(items[ "button" ], {BackgroundTransparency = 0})
                 library:tween(items[ "icon" ], {ImageColor3 = themes.preset.accent})
                 library:tween(items[ "name" ], {TextColor3 = rgb(255, 255, 255)})
-                library:tween(items[ "tab_holder" ], {Size = dim2(1, -196, 1, -81)}, Enum.EasingStyle.Quad, 0.4)
+                library:tween(items[ "tab_holder" ], {Size = dim2(1, -196, 1, -88)}, Enum.EasingStyle.Quad, 0.4)
                 
                 items[ "tab_holder" ].Visible = true 
                 items[ "tab_holder" ].Parent = self.items[ "main" ]
