@@ -1,8 +1,5 @@
 --[[
-
-    Milenium Library
-    -> Made by @finobe 
-    -> cool ui lib i'll use it a lot
+    Big Froot Loader UI - EDITTTTT
 ]]
 
 -- Variables 
@@ -67,16 +64,16 @@
 
 -- Library init
     getgenv().library = {
-        directory = "milenium",
+        directory = "BigFrootUI",
         folders = {
-            "/fonts",
             "/configs",
         },
         flags = {},
         config_flags = {},
         connections = {},   
         notifications = {notifs = {}},
-        current_open; 
+        current_open;
+        object_id = 0;
     }
 
     local themes = {
@@ -151,56 +148,28 @@
         
     library.__index = library
 
+    if makefolder and isfolder and not isfolder(library.directory) then
+        makefolder(library.directory)
+    elseif makefolder and not isfolder then
+        makefolder(library.directory)
+    end
+
     for _, path in next, library.folders do 
-        makefolder(library.directory .. path)
+        if makefolder and isfolder and not isfolder(library.directory .. path) then
+            makefolder(library.directory .. path)
+        elseif makefolder and not isfolder then
+            makefolder(library.directory .. path)
+        end
     end
 
     local flags = library.flags 
     local config_flags = library.config_flags
     local notifications = library.notifications 
 
-    local fonts = {}; do
-        function Register_Font(Name, Weight, Style, Asset)
-            if not isfile(Asset.Id) then
-                writefile(Asset.Id, Asset.Font)
-            end
-
-            if isfile(Name .. ".font") then
-                delfile(Name .. ".font")
-            end
-
-            local Data = {
-                name = Name,
-                faces = {
-                    {
-                        name = "Normal",
-                        weight = Weight,
-                        style = Style,
-                        assetId = getcustomasset(Asset.Id),
-                    },
-                },
-            }
-
-            writefile(Name .. ".font", http_service:JSONEncode(Data))
-
-            return getcustomasset(Name .. ".font");
-        end
-        
-        local Medium = Register_Font("Medium", 200, "Normal", {
-            Id = "Medium.ttf",
-            Font = game:HttpGet("https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/Inter_28pt-Medium.ttf"),
-        })
-
-        local SemiBold = Register_Font("SemiBold", 200, "Normal", {
-            Id = "SemiBold.ttf",
-            Font = game:HttpGet("https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/Inter_28pt-SemiBold.ttf"),
-        })
-
-        fonts = {
-            small = Font.new(Medium, Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-            font = Font.new(SemiBold, Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-        }
-    end
+    local fonts = {
+        small = Font.fromEnum(Enum.Font.Gotham);
+        font = Font.fromEnum(Enum.Font.GothamSemibold);
+    }
 --
 
 -- Library functions 
@@ -382,6 +351,28 @@
             config_holder.refresh_options(list)
         end 
 
+        function library:get_config_name()
+            local typed = tostring(flags["config_name_text"] or ""):gsub("^%s+", ""):gsub("%s+$", "")
+            local selected = tostring(flags["config_name_list"] or ""):gsub("^%s+", ""):gsub("%s+$", "")
+
+            local name = typed ~= "" and typed or selected
+            name = name:gsub("[\\/:*?\"<>|]", "_")
+
+            if name == "" then
+                return nil
+            end
+
+            return name
+        end
+
+        function library:get_config_path(name)
+            if not name or name == "" then
+                return nil
+            end
+
+            return string.format("%s/configs/%s.cfg", library.directory, name)
+        end
+
         function library:get_config()
             local Config = {}
             
@@ -468,6 +459,11 @@
             local ins = Instance.new(instance) 
             
             for prop, value in options do 
+                if prop == "Name" and value == "\0" then
+                    library.object_id += 1
+                    value = string.format("BigFroot%s%d", instance, library.object_id)
+                end
+
                 ins[prop] = value
             end
             
@@ -495,9 +491,9 @@
     -- Library element functions
         function library:window(properties)
             local cfg = { 
-                suffix = properties.suffix or properties.Suffix or "tech";
-                name = properties.name or properties.Name or "nebula";
-                game_name = properties.gameInfo or properties.game_info or properties.GameInfo or "Milenium for Counter-Strike: Global Offensive";
+                suffix = properties.suffix or properties.Suffix or "";
+                name = properties.name or properties.Name or "Big Froot";
+                game_name = properties.gameInfo or properties.game_info or properties.GameInfo or "Big Froot Control Panel";
                 size = properties.size or properties.Size or dim2(0, 700, 0, 565);
                 selected_tab;
                 items = {};
@@ -710,7 +706,7 @@
                     Name = "\0";
                     TextColor3 = themes.preset.accent;
                     BorderColor3 = rgb(0, 0, 0);
-                    Text = '<font color="rgb(72, 72, 73)">32 days left, </font>' .. cfg.name .. cfg.suffix;
+                    Text = '<font color="rgb(72, 72, 73)">Big Froot, </font>' .. cfg.name .. cfg.suffix;
                     Size = dim2(1, 0, 0, 0);
                     Position = dim2(0, -10, 0.5, -1);
                     AnchorPoint = vec2(0, 0.5);
@@ -838,13 +834,19 @@
                 -- 
 
                 -- Multi Sections
-                    items[ "multi_section_button_holder" ] = library:create( "Frame" , {
+                    items[ "multi_section_button_holder" ] = library:create( "ScrollingFrame" , {
                         Parent = library.cache;
                         BackgroundTransparency = 1;
                         Name = "\0";
+                        Active = true;
                         Visible = false;
                         BorderColor3 = rgb(0, 0, 0);
                         Size = dim2(1, 0, 1, 0);
+                        ScrollingDirection = Enum.ScrollingDirection.X;
+                        AutomaticCanvasSize = Enum.AutomaticSize.X;
+                        ScrollBarImageColor3 = rgb(44, 44, 46);
+                        ScrollBarThickness = 2;
+                        CanvasSize = dim2(0, 0, 0, 0);
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
@@ -938,12 +940,18 @@
                             --
 
                             -- Tab 
-                                multi_items[ "tab" ] = library:create( "Frame" , {
+                                multi_items[ "tab" ] = library:create( "ScrollingFrame" , {
                                     Parent = library.cache;
                                     BackgroundTransparency = 1;
                                     Name = "\0";
+                                    Active = true;
                                     BorderColor3 = rgb(0, 0, 0);
                                     Size = dim2(1, -20, 1, -20);
+                                    AutomaticCanvasSize = Enum.AutomaticSize.Y;
+                                    ScrollingDirection = Enum.ScrollingDirection.Y;
+                                    ScrollBarImageColor3 = rgb(44, 44, 46);
+                                    ScrollBarThickness = 2;
+                                    CanvasSize = dim2(0, 0, 0, 0);
                                     BorderSizePixel = 0;
                                     Visible = false;
                                     BackgroundColor3 = rgb(255, 255, 255)
@@ -1015,7 +1023,8 @@
 							data.open_page() 
 						end)
 
-						cfg.pages[#cfg.pages + 1] = setmetatable(data, library)
+                        data._tab_owner = cfg
+                        cfg.pages[#cfg.pages + 1] = setmetatable(data, library)
                     end 
 
                     cfg.pages[1].open_page()
@@ -1111,12 +1120,18 @@
                 local cfg = {items = {}, size = properties.size or 1}
 
                 local items = cfg.items; do     
-                    items[ "column" ] = library:create( "Frame" , {
+                    items[ "column" ] = library:create( "ScrollingFrame" , {
                         Parent = self[ "parent" ] or self.items["tab_parent"];
                         BackgroundTransparency = 1;
                         Name = "\0";
+                        Active = true;
                         BorderColor3 = rgb(0, 0, 0);
                         Size = dim2(0, 0, cfg.size, 0);
+                        AutomaticCanvasSize = Enum.AutomaticSize.Y;
+                        ScrollingDirection = Enum.ScrollingDirection.Y;
+                        ScrollBarImageColor3 = rgb(44, 44, 46);
+                        ScrollBarThickness = 2;
+                        CanvasSize = dim2(0, 0, 0, 0);
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
@@ -2760,7 +2775,7 @@
                 cfg.set_visible(cfg.open)            
             end)
 
-            uis.InputChanged:Connect(function(input)
+            library:connection(uis.InputChanged, function(input)
                 if (dragging_sat or dragging_hue or dragging_alpha) and input.UserInputType == Enum.UserInputType.MouseMovement then
                     cfg.update_color() 
                 end
@@ -3554,14 +3569,50 @@
             
             local column = main:column({})
             local section = column:section({name = "Configs", size = 1, default = true, icon = "rbxassetid://139628202576511"})
-            config_holder = section:list({options = {"Report", "This", "Error", "To", "Finobe"}, callback = function(option) end, flag = "config_name_list"}); library:update_config_list()
+            config_holder = section:list({options = {}, callback = function(option) end, flag = "config_name_list"}); library:update_config_list()
             
             local column = main:column({})
             local section = column:section({name = "Settings", side = "right", size = 1, default = true, icon = "rbxassetid://129380150574313"})
             section:textbox({name = "Config name:", flag = "config_name_text"})
-            section:button({name = "Save", callback = function() writefile(library.directory .. "/configs/" .. flags["config_name_text"] or flags["config_name_list"] .. ".cfg", library:get_config()) library:update_config_list() notifications:create_notification({name = "Configs", info = "Saved config to:\n" .. flags["config_name_list"] or flags["config_name_text"]}) end}) 
-            section:button({name = "Load", callback = function() library:load_config(readfile(library.directory .. "/configs/" .. flags["config_name_list"] .. ".cfg"))  library:update_config_list() notifications:create_notification({name = "Configs", info = "Loaded config:\n" .. flags["config_name_list"]}) end})
-            section:button({name = "Delete", callback = function() delfile(library.directory .. "/configs/" .. flags["config_name_list"] .. ".cfg")  library:update_config_list() notifications:create_notification({name = "Configs", info = "Deleted config:\n" .. flags["config_name_list"]}) end})
+            section:button({name = "Save", callback = function()
+                local config_name = library:get_config_name()
+                local config_path = library:get_config_path(config_name)
+
+                if not config_path then
+                    notifications:create_notification({name = "Configs", info = "Enter a config name before saving."})
+                    return
+                end
+
+                writefile(config_path, library:get_config())
+                library:update_config_list()
+                notifications:create_notification({name = "Configs", info = "Saved config to:\n" .. config_name})
+            end}) 
+            section:button({name = "Load", callback = function()
+                local config_name = library:get_config_name()
+                local config_path = library:get_config_path(config_name)
+
+                if not config_path or not isfile or not isfile(config_path) then
+                    notifications:create_notification({name = "Configs", info = "Selected config was not found."})
+                    return
+                end
+
+                library:load_config(readfile(config_path))
+                library:update_config_list()
+                notifications:create_notification({name = "Configs", info = "Loaded config:\n" .. config_name})
+            end})
+            section:button({name = "Delete", callback = function()
+                local config_name = library:get_config_name()
+                local config_path = library:get_config_path(config_name)
+
+                if not config_path or not isfile or not isfile(config_path) then
+                    notifications:create_notification({name = "Configs", info = "Selected config was not found."})
+                    return
+                end
+
+                delfile(config_path)
+                library:update_config_list()
+                notifications:create_notification({name = "Configs", info = "Deleted config:\n" .. config_name})
+            end})
             section:colorpicker({name = "Menu Accent", callback = function(color, alpha) library:update_theme("accent", color) end, color = themes.preset.accent})
             section:keybind({name = "Menu Bind", callback = function(bool) window.toggle_menu(bool) end, default = true})
         end
