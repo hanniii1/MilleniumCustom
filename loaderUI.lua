@@ -543,7 +543,7 @@
                     BackgroundTransparency = 1;
                     Name = "\0";
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 196, 1, -25);
+                    Size = dim2(0, 172, 1, -25);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(14, 14, 16)
                 });
@@ -604,9 +604,9 @@
                     Parent = items[ "main" ];
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Position = dim2(0, 196, 0, 0);
+                    Position = dim2(0, 172, 0, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -196, 0, 56);
+                    Size = dim2(1, -172, 0, 56);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(255, 255, 255)
                 }); cfg.multi_holder = items[ "multi_holder" ];
@@ -643,9 +643,9 @@
                     Parent = items[ "main" ];
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Position = dim2(0, 196, 0, 56);
+                    Position = dim2(0, 172, 0, 56);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -196, 1, -81);
+                    Size = dim2(1, -172, 1, -81);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(14, 14, 16);
                     ZIndex = 2;
@@ -758,9 +758,9 @@
                     Name = "\0";
                     Visible = false;
                     BackgroundTransparency = 1;
-                    Position = dim2(0, 196, 0, 56);
+                    Position = dim2(0, 172, 0, 56);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -216, 1, -108);
+                    Size = dim2(1, -192, 1, -108);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
@@ -1727,21 +1727,22 @@
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
-                items[ "name" ] = library:create( "TextLabel" , {
-                    FontFace = fonts.small;
-                    TextColor3 = rgb(245, 245, 245);
-                    BorderColor3 = rgb(0, 0, 0);
-                    Text = cfg.name;
-                    Parent = items[ "slider_object" ];
-                    Name = "\0";
-                    Size = dim2(1, 0, 0, 0);
-                    BackgroundTransparency = 1;
-                    TextXAlignment = Enum.TextXAlignment.Left;
-                    BorderSizePixel = 0;
-                    AutomaticSize = Enum.AutomaticSize.XY;
-                    TextSize = 16;
-                    BackgroundColor3 = rgb(255, 255, 255)
-                });
+                    items[ "name" ] = library:create( "TextLabel" , {
+                        FontFace = fonts.small;
+                        TextColor3 = rgb(245, 245, 245);
+                        BorderColor3 = rgb(0, 0, 0);
+                        Text = cfg.name;
+                        Parent = items[ "slider_object" ];
+                        Name = "\0";
+                        Size = dim2(1, -88, 0, 0);
+                        BackgroundTransparency = 1;
+                        TextXAlignment = Enum.TextXAlignment.Left;
+                        TextTruncate = Enum.TextTruncate.AtEnd;
+                        BorderSizePixel = 0;
+                        AutomaticSize = Enum.AutomaticSize.Y;
+                        TextSize = 16;
+                        BackgroundColor3 = rgb(255, 255, 255)
+                    });
                 
                 if cfg.info then 
                     items[ "info" ] = library:create( "TextLabel" , {
@@ -1769,16 +1770,16 @@
                     PaddingLeft = dim(0, 5)
                 });
                 
-                items[ "right_components" ] = library:create( "Frame" , {
-                    Parent = items[ "slider_object" ];
-                    Name = "\0";
-                    BackgroundTransparency = 1;
-                    Position = dim2(0, 4, 0, 23);
-                    BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, 0, 0, 26);
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(255, 255, 255)
-                });
+                    items[ "right_components" ] = library:create( "Frame" , {
+                        Parent = items[ "slider_object" ];
+                        Name = "\0";
+                        BackgroundTransparency = 1;
+                        Position = dim2(0, 4, 0, 25);
+                        BorderColor3 = rgb(0, 0, 0);
+                        Size = dim2(1, -8, 0, 28);
+                        BorderSizePixel = 0;
+                        BackgroundColor3 = rgb(255, 255, 255)
+                    });
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "right_components" ];
@@ -1787,20 +1788,20 @@
                     FillDirection = Enum.FillDirection.Horizontal
                 });
                 
-                items[ "slider" ] = library:create( "TextButton" , {
-                    FontFace = fonts.small;
-                    TextColor3 = rgb(0, 0, 0);
-                    BorderColor3 = rgb(0, 0, 0);
-                    Text = "";
-                    AutoButtonColor = false;
-                    AnchorPoint = vec2(1, 0);
-                    Parent = items[ "right_components" ];
-                    Name = "\0";
-                    Position = dim2(1, 0, 0, 0);
-                    Size = dim2(1, -4, 0, 6);
-                    BorderSizePixel = 0;
-                    TextSize = 14;
-                    BackgroundColor3 = rgb(52, 53, 58)
+                    items[ "slider" ] = library:create( "TextButton" , {
+                        FontFace = fonts.small;
+                        TextColor3 = rgb(0, 0, 0);
+                        BorderColor3 = rgb(0, 0, 0);
+                        Text = "";
+                        AutoButtonColor = false;
+                        AnchorPoint = vec2(0, 0);
+                        Parent = items[ "right_components" ];
+                        Name = "\0";
+                        Position = dim2(0, 0, 0, 0);
+                        Size = dim2(1, 0, 0, 6);
+                        BorderSizePixel = 0;
+                        TextSize = 14;
+                        BackgroundColor3 = rgb(52, 53, 58)
                 });
                 
                 library:create( "UICorner" , {
@@ -1851,12 +1852,12 @@
                     Parent = items[ "slider_object" ];
                     Name = "\0";
                     Size = dim2(1, 0, 0, 0);
-                    Position = dim2(0, 6, 0, 0);
+                    Position = dim2(0, 4, 0, -1);
                     BackgroundTransparency = 1;
                     TextXAlignment = Enum.TextXAlignment.Right;
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.XY;
-                    TextSize = 15;
+                    TextSize = 14;
                     ZIndex = 3;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
@@ -1865,8 +1866,8 @@
                     Parent = items[ "slider_object" ];
                     Name = "\0";
                     BackgroundColor3 = rgb(44, 45, 50);
-                    Position = dim2(1, -78, 0, -2);
-                    Size = dim2(0, 72, 0, 20);
+                    Position = dim2(1, -62, 0, -1);
+                    Size = dim2(0, 56, 0, 18);
                     BorderSizePixel = 0;
                     ZIndex = 2;
                 });
@@ -1876,13 +1877,6 @@
                     CornerRadius = dim(0, 999)
                 });
 
-                library:create( "UIStroke" , {
-                    Parent = items[ "value_backing" ];
-                    Color = rgb(82, 83, 90);
-                    Transparency = 0.18;
-                    ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
-                });
-
                 items[ "min" ] = library:create( "TextLabel" , {
                     FontFace = fonts.small;
                     TextColor3 = rgb(128, 130, 138);
@@ -1890,13 +1884,13 @@
                     Text = tostring(cfg.min) .. cfg.suffix;
                     Parent = items[ "slider" ];
                     Name = "\0";
-                    Position = dim2(0, 0, 1, 5);
-                    Size = dim2(0, 64, 0, 0);
+                    Position = dim2(0, 0, 1, 7);
+                    Size = dim2(0, 52, 0, 0);
                     BackgroundTransparency = 1;
                     TextXAlignment = Enum.TextXAlignment.Left;
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.Y;
-                    TextSize = 13;
+                    TextSize = 12;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
 
@@ -1908,13 +1902,13 @@
                     Parent = items[ "slider" ];
                     Name = "\0";
                     AnchorPoint = vec2(1, 0);
-                    Position = dim2(1, 0, 1, 5);
-                    Size = dim2(0, 64, 0, 0);
+                    Position = dim2(1, 0, 1, 7);
+                    Size = dim2(0, 52, 0, 0);
                     BackgroundTransparency = 1;
                     TextXAlignment = Enum.TextXAlignment.Right;
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.Y;
-                    TextSize = 13;
+                    TextSize = 12;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
@@ -1984,8 +1978,9 @@
                 scrolling = options.scrolling or false;
 
                 compact = options.compact == true;
-                width = options.width or (options.compact and 112 or 130);
-                height = options.height or (options.compact and 20 or 22);
+                width = options.width or (options.compact and 124 or 144);
+                height = options.height or (options.compact and 18 or 22);
+                dynamic = options.dynamic ~= false;
 
                 -- Ignore these 
                 open = false;
@@ -2024,11 +2019,12 @@
                         Text = cfg.name or "Dropdown";
                         Parent = items[ "dropdown_object" ];
                         Name = "\0";
-                        Size = dim2(1, 0, 0, 0);
+                        Size = dim2(1, -118, 0, 0);
                         BackgroundTransparency = 1;
                         TextXAlignment = Enum.TextXAlignment.Left;
+                        TextTruncate = Enum.TextTruncate.AtEnd;
                         BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.XY;
+                        AutomaticSize = Enum.AutomaticSize.Y;
                         TextSize = 16;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
@@ -2105,7 +2101,7 @@
                         Text = "awdawdawdawdawdawdawdaw";
                         Parent = items[ "dropdown" ];
                         Name = "\0";
-                        Size = dim2(1, -22, 1, 0);
+                        Size = dim2(1, -20, 1, 0);
                         BorderSizePixel = 0;
                         BackgroundTransparency = 1;
                         TextXAlignment = Enum.TextXAlignment.Left;
@@ -2118,8 +2114,8 @@
                     
                     library:create( "UIPadding" , {
                         Parent = items[ "sub_text" ];
-                        PaddingRight = dim(0, 6);
-                        PaddingLeft = dim(0, 8)
+                        PaddingRight = dim(0, 12);
+                        PaddingLeft = dim(0, 10)
                     });
                     
                     items[ "indicator" ] = library:create( "ImageLabel" , {
@@ -2129,7 +2125,7 @@
                         AnchorPoint = vec2(1, 0.5);
                         Image = "rbxassetid://101025591575185";
                         BackgroundTransparency = 1;
-                        Position = dim2(1, -8, 0.5, 0);
+                        Position = dim2(1, -7, 0.5, 0);
                         Name = "\0";
                         Size = dim2(0, cfg.compact and 11 or 12, 0, cfg.compact and 11 or 12);
                         BorderSizePixel = 0;
@@ -2208,6 +2204,20 @@
                 return button
             end
             
+            local function refresh_dropdown_width()
+                if not cfg.dynamic then
+                    items[ "dropdown" ].Size = dim2(0, cfg.width, 0, cfg.height)
+                    return
+                end
+
+                local reserve = cfg.compact and 36 or 40
+                local measured = items[ "sub_text" ].TextBounds.X + reserve
+                local mainWidth = (library.items and library.items.main and library.items.main.AbsoluteSize.X) or 720
+                local maxWidth = math.max(cfg.width, math.floor(mainWidth * 0.34))
+                local desired = math.max(cfg.width, math.min(maxWidth, measured))
+                items[ "dropdown" ].Size = dim2(0, desired, 0, cfg.height)
+            end
+
             function cfg.set_visible(bool)
                 local a = bool and cfg.y_size or 0
                 library:tween(items[ "dropdown_holder" ], {Size = dim_offset(items[ "dropdown" ].AbsoluteSize.X, a)})
@@ -2233,6 +2243,7 @@
                 end
 
                 items[ "sub_text" ].Text = isTable and concat(selected, ", ") or selected[1] or ""
+                refresh_dropdown_width()
                 flags[cfg.flag] = isTable and selected or selected[1]
                 
                 cfg.callback(flags[cfg.flag]) 
@@ -3035,20 +3046,13 @@
                     BorderColor3 = rgb(0, 0, 0);
                     Position = dim2(1, 0, 0, 0);
                     Size = dim2(1, -4, 0, 30);
-                    BackgroundColor3 = rgb(52, 53, 58)
+                    BackgroundColor3 = rgb(44, 45, 49)
                 }); 
 
                 library:create( "UICorner" , {
                     Parent = items[ "input" ];
                     CornerRadius = dim(0, 6)
                 });                
-
-                library:create( "UIStroke" , {
-                    Parent = items[ "input" ];
-                    Color = rgb(92, 94, 102);
-                    Transparency = 0.05;
-                    ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
-                });
                 
                 library:create( "UIPadding" , {
                     Parent = items[ "right_components" ];
