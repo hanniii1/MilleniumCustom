@@ -64,6 +64,7 @@
 -- Library init
     getgenv().library = {
         directory = "BigFrootUI",
+        autoload_file = "autoload.txt",
         folders = {
             "/configs",
         },
@@ -71,6 +72,7 @@
         config_flags = {},
         connections = {},   
         notifications = {notifs = {}},
+        notification_serial = 0,
         current_open;
         object_id = 0;
     }
@@ -335,12 +337,14 @@
         end
 
         local config_holder;
+        local autoload_status;
         function library:update_config_list() 
             if not config_holder then 
                 return 
             end
             
             local list = {}
+            local selected = tostring(flags["config_name_list"] or ""):gsub("^%s+", ""):gsub("%s+$", "")
             
             for idx, file in listfiles(library.directory .. "/configs") do
                 local name = file:gsub(library.directory .. "/configs\\", ""):gsub(".cfg", ""):gsub(library.directory .. "\\configs\\", "")
@@ -348,6 +352,10 @@
             end
 
             config_holder.refresh_options(list)
+
+            if selected ~= "" and find(list, selected) and config_holder.select then
+                config_holder.select(selected, true)
+            end
         end 
 
         function library:get_config_name()
@@ -370,6 +378,70 @@
             end
 
             return string.format("%s/configs/%s.cfg", library.directory, name)
+        end
+
+        function library:get_selected_config_name()
+            local selected = tostring(flags["config_name_list"] or ""):gsub("^%s+", ""):gsub("%s+$", "")
+
+            if selected == "" then
+                return nil
+            end
+
+            return selected
+        end
+
+        function library:get_autoload_path()
+            return string.format("%s/%s", library.directory, library.autoload_file)
+        end
+
+        function library:update_autoload_status(name)
+            if autoload_status and autoload_status.set_info then
+                autoload_status.set_info(name and name ~= "" and name or "None")
+            end
+        end
+
+        function library:get_autoload_name()
+            local autoload_path = library:get_autoload_path()
+
+            if not isfile or not readfile or not isfile(autoload_path) then
+                return nil
+            end
+
+            local name = tostring(readfile(autoload_path) or ""):gsub("^%s+", ""):gsub("%s+$", "")
+            name = name:gsub("[\\/:*?\"<>|]", "_")
+
+            if name == "" then
+                return nil
+            end
+
+            return name
+        end
+
+        function library:set_autoload_name(name)
+            local autoload_path = library:get_autoload_path()
+            local sanitized = tostring(name or ""):gsub("^%s+", ""):gsub("%s+$", ""):gsub("[\\/:*?\"<>|]", "_")
+
+            if sanitized == "" then
+                return false
+            end
+
+            if not writefile then
+                return false
+            end
+
+            writefile(autoload_path, sanitized)
+            library:update_autoload_status(sanitized)
+            return true
+        end
+
+        function library:clear_autoload_name()
+            local autoload_path = library:get_autoload_path()
+
+            if delfile and isfile and isfile(autoload_path) then
+                delfile(autoload_path)
+            end
+
+            library:update_autoload_status(nil)
         end
 
         function library:get_config()
@@ -409,6 +481,35 @@
                 end 
             end 
         end 
+
+        function library:try_autoload()
+            local config_name = library:get_autoload_name()
+
+            library:update_autoload_status(config_name)
+
+            if not config_name then
+                return false
+            end
+
+            local config_path = library:get_config_path(config_name)
+
+            if not config_path or not isfile or not readfile or not isfile(config_path) then
+                library:clear_autoload_name()
+                notifications:create_notification({name = "Configs", info = "Autoload config was missing and has been cleared."})
+                return false
+            end
+
+            library:load_config(readfile(config_path))
+
+            flags["config_name_list"] = config_name
+
+            if config_holder and config_holder.select then
+                config_holder.select(config_name, true)
+            end
+
+            library:update_autoload_status(config_name)
+            return true, config_name
+        end
         
         function library:round(number, float) 
             local multiplier = 1 / (float or 1)
@@ -3695,8 +3796,11 @@
                 options = properties.options or {"1", "2", "3"};
                 flag = properties.flag or library:next_flag();    
                 callback = properties.callback or function() end;
-                data_store = {};        
+                data_store = {};
+                option_lookup = {};
                 current_element;
+                current_button;
+                current_value;
             }
 
             local items = cfg.items; do
@@ -3724,10 +3828,41 @@
                 });
             end 
 
+            function cfg.select(option_data, skip_callback)
+                local entry = cfg.option_lookup[option_data]
+
+                if not entry then
+                    return false
+                end
+
+                local current = cfg.current_element
+                if current and current ~= entry.label then
+                    library:tween(current, {TextColor3 = rgb(72, 72, 72)})
+                end
+
+                flags[cfg.flag] = option_data
+                cfg.current_element = entry.label
+                cfg.current_button = entry.button
+                cfg.current_value = option_data
+                library:tween(entry.label, {TextColor3 = rgb(245, 245, 245)})
+
+                if not skip_callback then
+                    cfg.callback(option_data)
+                end
+
+                return true
+            end
+
             function cfg.refresh_options(options_to_refresh) -- ignore goofy parameter
                 for _,option in cfg.data_store do 
                     option:Destroy()
                 end
+
+                cfg.data_store = {}
+                cfg.option_lookup = {}
+                cfg.current_element = nil
+                cfg.current_button = nil
+                cfg.current_value = nil
 
                 for _, option_data in options_to_refresh do -- haha u skids no next >_<
                     local button = library:create( "TextButton" , {
@@ -3764,18 +3899,15 @@
                     library:create( "UICorner" , {
                         Parent = button;
                         CornerRadius = dim(0, 3)
-                    });     
+                    });
+
+                    cfg.option_lookup[option_data] = {
+                        button = button,
+                        label = name
+                    }
 
                     button.MouseButton1Click:Connect(function()
-                        local current = cfg.current_element 
-                        if current and current ~= name then 
-                            library:tween(current, {TextColor3 = rgb(72, 72, 72)})
-                        end
-
-                        flags[cfg.flag] = option_data
-                        cfg.callback(option_data)
-                        library:tween(name, {TextColor3 = rgb(245, 245, 245)})
-                        cfg.current_element = name
+                        cfg.select(option_data)
                     end)
 
                     name.MouseEnter:Connect(function()
@@ -3793,6 +3925,10 @@
 
                         library:tween(name, {TextColor3 = rgb(72, 72, 72)})
                     end)
+                end
+
+                if flags[cfg.flag] and cfg.option_lookup[flags[cfg.flag]] then
+                    cfg.select(flags[cfg.flag], true)
                 end
             end
 
@@ -3812,6 +3948,7 @@
             local column = main:column({})
             local section = column:section({name = "Settings", side = "right", size = 1, default = true, icon = "rbxassetid://129380150574313"})
             section:textbox({name = "Config name:", flag = "config_name_text"})
+            autoload_status = section:label({name = "Auto Load", info = "None"})
             section:button({name = "Save", callback = function()
                 local config_name = library:get_config_name()
                 local config_path = library:get_config_path(config_name)
@@ -3823,6 +3960,11 @@
 
                 writefile(config_path, library:get_config())
                 library:update_config_list()
+
+                if config_holder and config_holder.select then
+                    config_holder.select(config_name, true)
+                end
+
                 notifications:create_notification({name = "Configs", info = "Saved config to:\n" .. config_name})
             end}) 
             section:button({name = "Load", callback = function()
@@ -3836,7 +3978,40 @@
 
                 library:load_config(readfile(config_path))
                 library:update_config_list()
+
+                if config_holder and config_holder.select then
+                    config_holder.select(config_name, true)
+                end
+
                 notifications:create_notification({name = "Configs", info = "Loaded config:\n" .. config_name})
+            end})
+            section:button({name = "Auto Selected Config", callback = function()
+                local config_name = library:get_selected_config_name()
+                local config_path = library:get_config_path(config_name)
+
+                if not config_name or not config_path or not isfile or not isfile(config_path) then
+                    notifications:create_notification({name = "Configs", info = "Select a config from the list before enabling auto load."})
+                    return
+                end
+
+                if library:set_autoload_name(config_name) then
+                    if config_holder and config_holder.select then
+                        config_holder.select(config_name, true)
+                    end
+
+                    notifications:create_notification({name = "Configs", info = "Auto load set to:\n" .. config_name})
+                end
+            end})
+            section:button({name = "Clear Auto Load", callback = function()
+                local autoload_name = library:get_autoload_name()
+
+                if not autoload_name then
+                    notifications:create_notification({name = "Configs", info = "Auto load is already clear."})
+                    return
+                end
+
+                library:clear_autoload_name()
+                notifications:create_notification({name = "Configs", info = "Cleared auto load target."})
             end})
             section:button({name = "Delete", callback = function()
                 local config_name = library:get_config_name()
@@ -3849,24 +4024,68 @@
 
                 delfile(config_path)
                 library:update_config_list()
+
+                if library:get_autoload_name() == config_name then
+                    library:clear_autoload_name()
+                end
+
+                if flags["config_name_list"] == config_name then
+                    flags["config_name_list"] = nil
+                end
+
                 notifications:create_notification({name = "Configs", info = "Deleted config:\n" .. config_name})
             end})
             section:colorpicker({name = "Menu Accent", callback = function(color, alpha) library:update_theme("accent", color) end, color = themes.preset.accent})
             section:keybind({name = "Menu Bind", callback = function(bool) window.toggle_menu(bool) end, default = true})
+            library:update_autoload_status(library:get_autoload_name())
+            library:try_autoload()
         end
     --
 
     -- Notification Library
-        function notifications:refresh_notifs() 
-            local offset = 50
+        function notifications:get_entries()
+            local entries = {}
 
-            for i, v in notifications.notifs do
-                local Position = vec2(20, offset)
-                library:tween(v, {Position = dim_offset(Position.X, Position.Y)}, Enum.EasingStyle.Quad, 0.4)
-                offset += (v.AbsoluteSize.Y + 10)
+            for index, frame in notifications.notifs do
+                if frame and frame.Parent then
+                    entries[#entries + 1] = {
+                        index = index,
+                        frame = frame
+                    }
+                end
             end
 
-            return offset
+            table.sort(entries, function(a, b)
+                return a.index > b.index
+            end)
+
+            return entries
+        end
+
+        function notifications:refresh_notifs(instant)
+            local current_camera = ws.CurrentCamera or camera
+            local viewport = current_camera and current_camera.ViewportSize or vec2(1280, 720)
+            local margin_x = 16
+            local margin_y = 16
+            local spacing = 10
+            local offset_y = viewport.Y - margin_y
+
+            for _, entry in notifications:get_entries() do
+                local frame = entry.frame
+                local height = frame.AbsoluteSize.Y > 0 and frame.AbsoluteSize.Y or frame.Size.Y.Offset
+                offset_y -= height
+
+                local position = dim_offset(viewport.X - margin_x, max(margin_y, offset_y))
+                if instant then
+                    frame.Position = position
+                else
+                    library:tween(frame, {Position = position}, Enum.EasingStyle.Quad, 0.4)
+                end
+
+                offset_y -= spacing
+            end
+
+            return offset_y
         end
         
         function notifications:fade(path, is_fading)
@@ -3986,26 +4205,20 @@
                 });
             end
             
-            local index = #notifications.notifs + 1
+            library.notification_serial += 1
+            local index = library.notification_serial
             notifications.notifs[index] = items[ "notification" ]
 
+            notifications:refresh_notifs(true)
             notifications:fade(items[ "notification" ], false)
-            
-            local offset = notifications:refresh_notifs()
-
-            items[ "notification" ].Position = dim_offset(20, offset)
-
-            library:tween(items[ "notification" ], {AnchorPoint = vec2(0, 0)}, Enum.EasingStyle.Quad, 1)
             library:tween(items[ "bar" ], {Size = dim2(1, -8, 0, 5)}, Enum.EasingStyle.Quad, cfg.lifetime)
 
             task.spawn(function()
                 task.wait(cfg.lifetime)
                 
                 notifications.notifs[index] = nil
-                
+                notifications:refresh_notifs()
                 notifications:fade(items[ "notification" ], true)
-                
-                library:tween(items[ "notification" ], {AnchorPoint = vec2(1, 0)}, Enum.EasingStyle.Quad, 1)
 
                 task.wait(1)
         
