@@ -1694,180 +1694,65 @@
                 name = options.name or nil,
                 suffix = options.suffix or "",
                 flag = options.flag or library:next_flag(),
-                callback = options.callback or function() end, 
-                info = options.info or nil; 
+                callback = options.callback or function() end,
+                info = options.info or nil;
 
-                -- value settings
                 min = options.min or options.minimum or 0,
                 max = options.max or options.maximum or 100,
                 intervals = options.interval or options.decimal or 1,
                 default = options.default or 10,
-                value = options.default or 10, 
+                value = options.default or 10,
                 seperator = options.seperator or options.Seperator or true;
 
                 dragging = false,
+                drag_kind = nil,
                 items = {}
-            } 
+            }
 
             flags[cfg.flag] = cfg.default
 
             local items = cfg.items; do
-                items[ "slider_object" ] = library:create( "TextButton" , {
-                    FontFace = fonts.small;
-                    TextColor3 = rgb(0, 0, 0);
-                    BorderColor3 = rgb(0, 0, 0);
-                    Text = "";
+                items[ "slider_object" ] = library:create( "Frame" , {
                     Parent = self.items[ "elements" ];
                     Name = "\0";
                     BackgroundTransparency = 1;
                     Size = dim2(1, 0, 0, 0);
+                    BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.Y;
-                    TextSize = 14;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
-                
-                    items[ "name" ] = library:create( "TextLabel" , {
-                        FontFace = fonts.small;
-                        TextColor3 = rgb(245, 245, 245);
-                        BorderColor3 = rgb(0, 0, 0);
-                        Text = cfg.name;
-                        Parent = items[ "slider_object" ];
-                        Name = "\0";
-                        Size = dim2(1, -88, 0, 0);
-                        BackgroundTransparency = 1;
-                        TextXAlignment = Enum.TextXAlignment.Left;
-                        TextTruncate = Enum.TextTruncate.AtEnd;
-                        BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.Y;
-                        TextSize = 16;
-                        BackgroundColor3 = rgb(255, 255, 255)
-                    });
-                
-                if cfg.info then 
-                    items[ "info" ] = library:create( "TextLabel" , {
-                        FontFace = fonts.small;
-                        TextColor3 = rgb(130, 130, 130);
-                        BorderColor3 = rgb(0, 0, 0);
-                        TextWrapped = true;
-                        Text = cfg.info;
-                        Parent = items[ "slider_object" ];
-                        Name = "\0";
-                        Position = dim2(0, 5, 0, 37);
-                        Size = dim2(1, -10, 0, 0);
-                        BackgroundTransparency = 1;
-                        TextXAlignment = Enum.TextXAlignment.Left;
-                        BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.XY;
-                        TextSize = 16;
-                        BackgroundColor3 = rgb(255, 255, 255)
-                    });
-                end 
+
+                items[ "name" ] = library:create( "TextLabel" , {
+                    FontFace = fonts.small;
+                    TextColor3 = rgb(245, 245, 245);
+                    BorderColor3 = rgb(0, 0, 0);
+                    Text = cfg.name;
+                    Parent = items[ "slider_object" ];
+                    Name = "\0";
+                    Size = dim2(1, -84, 0, 20);
+                    BackgroundTransparency = 1;
+                    TextXAlignment = Enum.TextXAlignment.Left;
+                    TextYAlignment = Enum.TextYAlignment.Center;
+                    TextTruncate = Enum.TextTruncate.AtEnd;
+                    BorderSizePixel = 0;
+                    TextSize = 16;
+                    BackgroundColor3 = rgb(255, 255, 255)
+                });
 
                 library:create( "UIPadding" , {
                     Parent = items[ "name" ];
                     PaddingRight = dim(0, 5);
                     PaddingLeft = dim(0, 5)
                 });
-                
-                    items[ "right_components" ] = library:create( "Frame" , {
-                        Parent = items[ "slider_object" ];
-                        Name = "\0";
-                        BackgroundTransparency = 1;
-                        Position = dim2(0, 4, 0, 25);
-                        BorderColor3 = rgb(0, 0, 0);
-                        Size = dim2(1, -8, 0, 28);
-                        BorderSizePixel = 0;
-                        BackgroundColor3 = rgb(255, 255, 255)
-                    });
-                
-                library:create( "UIListLayout" , {
-                    Parent = items[ "right_components" ];
-                    Padding = dim(0, 7);
-                    SortOrder = Enum.SortOrder.LayoutOrder;
-                    FillDirection = Enum.FillDirection.Horizontal
-                });
-                
-                    items[ "slider" ] = library:create( "TextButton" , {
-                        FontFace = fonts.small;
-                        TextColor3 = rgb(0, 0, 0);
-                        BorderColor3 = rgb(0, 0, 0);
-                        Text = "";
-                        AutoButtonColor = false;
-                        AnchorPoint = vec2(0, 0);
-                        Parent = items[ "right_components" ];
-                        Name = "\0";
-                        Position = dim2(0, 0, 0, 0);
-                        Size = dim2(1, 0, 0, 6);
-                        BorderSizePixel = 0;
-                        TextSize = 14;
-                        BackgroundColor3 = rgb(52, 53, 58)
-                });
-                
-                library:create( "UICorner" , {
-                    Parent = items[ "slider" ];
-                    CornerRadius = dim(0, 999)
-                });
-                
-                items[ "fill" ] = library:create( "Frame" , {
-                    Name = "\0";
-                    Parent = items[ "slider" ];
-                    BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0.5, 0, 0, 6);
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = themes.preset.accent
-                });  library:apply_theme(items[ "fill" ], "accent", "BackgroundColor3");
-                
-                library:create( "UICorner" , {
-                    Parent = items[ "fill" ];
-                    CornerRadius = dim(0, 999)
-                });
-                
-                items[ "circle" ] = library:create( "Frame" , {
-                    AnchorPoint = vec2(0.5, 0.5);
-                    Parent = items[ "fill" ];
-                    Name = "\0";
-                    Position = dim2(1, 0, 0.5, 0);
-                    BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 14, 0, 14);
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(244, 244, 244)
-                });
-                
-                library:create( "UICorner" , {
-                    Parent = items[ "circle" ];
-                    CornerRadius = dim(0, 999)
-                });
-                
-                library:create( "UIPadding" , {
-                    Parent = items[ "right_components" ];
-                    PaddingTop = dim(0, 4)
-                });
-                
-                items[ "value" ] = library:create( "TextLabel" , {
-                    FontFace = fonts.small;
-                    TextColor3 = rgb(242, 173, 79);
-                    BorderColor3 = rgb(0, 0, 0);
-                    Text = "50%";
-                    Parent = items[ "slider_object" ];
-                    Name = "\0";
-                    Size = dim2(1, 0, 0, 0);
-                    Position = dim2(0, 4, 0, -1);
-                    BackgroundTransparency = 1;
-                    TextXAlignment = Enum.TextXAlignment.Right;
-                    BorderSizePixel = 0;
-                    AutomaticSize = Enum.AutomaticSize.XY;
-                    TextSize = 14;
-                    ZIndex = 3;
-                    BackgroundColor3 = rgb(255, 255, 255)
-                });
 
                 items[ "value_backing" ] = library:create( "Frame" , {
                     Parent = items[ "slider_object" ];
                     Name = "\0";
+                    AnchorPoint = vec2(1, 0);
                     BackgroundColor3 = rgb(44, 45, 50);
-                    Position = dim2(1, -62, 0, -1);
-                    Size = dim2(0, 56, 0, 18);
+                    Position = dim2(1, -4, 0, 0);
+                    Size = dim2(0, 56, 0, 20);
                     BorderSizePixel = 0;
                     ZIndex = 2;
                 });
@@ -1877,19 +1762,99 @@
                     CornerRadius = dim(0, 999)
                 });
 
+                items[ "value" ] = library:create( "TextLabel" , {
+                    FontFace = fonts.small;
+                    TextColor3 = rgb(242, 173, 79);
+                    BorderColor3 = rgb(0, 0, 0);
+                    Text = tostring(cfg.default) .. cfg.suffix;
+                    Parent = items[ "value_backing" ];
+                    Name = "\0";
+                    Size = dim2(1, 0, 1, 0);
+                    BackgroundTransparency = 1;
+                    TextXAlignment = Enum.TextXAlignment.Center;
+                    TextYAlignment = Enum.TextYAlignment.Center;
+                    BorderSizePixel = 0;
+                    TextSize = 13;
+                    ZIndex = 3;
+                    BackgroundColor3 = rgb(255, 255, 255)
+                });
+
+                items[ "right_components" ] = library:create( "Frame" , {
+                    Parent = items[ "slider_object" ];
+                    Name = "\0";
+                    BackgroundTransparency = 1;
+                    Position = dim2(0, 4, 0, 28);
+                    BorderColor3 = rgb(0, 0, 0);
+                    Size = dim2(1, -8, 0, 32);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = rgb(255, 255, 255)
+                });
+
+                items[ "slider" ] = library:create( "TextButton" , {
+                    FontFace = fonts.small;
+                    TextColor3 = rgb(0, 0, 0);
+                    BorderColor3 = rgb(0, 0, 0);
+                    Text = "";
+                    AutoButtonColor = false;
+                    Parent = items[ "right_components" ];
+                    Name = "\0";
+                    Position = dim2(0, 0, 0, 4);
+                    Size = dim2(1, 0, 0, 8);
+                    BorderSizePixel = 0;
+                    TextSize = 14;
+                    BackgroundColor3 = rgb(52, 53, 58)
+                });
+
+                library:create( "UICorner" , {
+                    Parent = items[ "slider" ];
+                    CornerRadius = dim(0, 999)
+                });
+
+                items[ "fill" ] = library:create( "Frame" , {
+                    Name = "\0";
+                    AnchorPoint = vec2(0, 0.5);
+                    Parent = items[ "slider" ];
+                    Position = dim2(0, 0, 0.5, 0);
+                    BorderColor3 = rgb(0, 0, 0);
+                    Size = dim2(0, 0, 0, 6);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = themes.preset.accent
+                });  library:apply_theme(items[ "fill" ], "accent", "BackgroundColor3");
+
+                library:create( "UICorner" , {
+                    Parent = items[ "fill" ];
+                    CornerRadius = dim(0, 999)
+                });
+
+                items[ "circle" ] = library:create( "Frame" , {
+                    AnchorPoint = vec2(0.5, 0.5);
+                    Parent = items[ "slider" ];
+                    Name = "\0";
+                    Position = dim2(0, 0, 0.5, 0);
+                    BorderColor3 = rgb(0, 0, 0);
+                    Size = dim2(0, 14, 0, 14);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = rgb(244, 244, 244)
+                });
+
+                library:create( "UICorner" , {
+                    Parent = items[ "circle" ];
+                    CornerRadius = dim(0, 999)
+                });
+
                 items[ "min" ] = library:create( "TextLabel" , {
                     FontFace = fonts.small;
                     TextColor3 = rgb(128, 130, 138);
                     BorderColor3 = rgb(0, 0, 0);
                     Text = tostring(cfg.min) .. cfg.suffix;
-                    Parent = items[ "slider" ];
+                    Parent = items[ "right_components" ];
                     Name = "\0";
-                    Position = dim2(0, 0, 1, 7);
-                    Size = dim2(0, 52, 0, 0);
+                    Position = dim2(0, 0, 0, 17);
+                    Size = dim2(0, 56, 0, 14);
                     BackgroundTransparency = 1;
                     TextXAlignment = Enum.TextXAlignment.Left;
+                    TextYAlignment = Enum.TextYAlignment.Center;
                     BorderSizePixel = 0;
-                    AutomaticSize = Enum.AutomaticSize.Y;
                     TextSize = 12;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
@@ -1899,54 +1864,100 @@
                     TextColor3 = rgb(128, 130, 138);
                     BorderColor3 = rgb(0, 0, 0);
                     Text = tostring(cfg.max) .. cfg.suffix;
-                    Parent = items[ "slider" ];
+                    Parent = items[ "right_components" ];
                     Name = "\0";
                     AnchorPoint = vec2(1, 0);
-                    Position = dim2(1, 0, 1, 7);
-                    Size = dim2(0, 52, 0, 0);
+                    Position = dim2(1, 0, 0, 17);
+                    Size = dim2(0, 56, 0, 14);
                     BackgroundTransparency = 1;
                     TextXAlignment = Enum.TextXAlignment.Right;
+                    TextYAlignment = Enum.TextYAlignment.Center;
                     BorderSizePixel = 0;
-                    AutomaticSize = Enum.AutomaticSize.Y;
                     TextSize = 12;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
-                
-                library:create( "UIPadding" , {
-                    Parent = items[ "value" ];
-                    PaddingRight = dim(0, 5);
-                    PaddingLeft = dim(0, 5)
-                });                
-            end 
+
+                if cfg.info then
+                    items[ "info" ] = library:create( "TextLabel" , {
+                        FontFace = fonts.small;
+                        TextColor3 = rgb(130, 130, 130);
+                        BorderColor3 = rgb(0, 0, 0);
+                        TextWrapped = true;
+                        Text = cfg.info;
+                        Parent = items[ "slider_object" ];
+                        Name = "\0";
+                        Position = dim2(0, 5, 0, 66);
+                        Size = dim2(1, -10, 0, 0);
+                        BackgroundTransparency = 1;
+                        TextXAlignment = Enum.TextXAlignment.Left;
+                        BorderSizePixel = 0;
+                        AutomaticSize = Enum.AutomaticSize.XY;
+                        TextSize = 16;
+                        BackgroundColor3 = rgb(255, 255, 255)
+                    });
+                end
+            end
+
+            local function refresh_value_backing()
+                local width = math.max(56, items[ "value" ].TextBounds.X + 16)
+                items[ "value_backing" ].Size = dim2(0, width, 0, 20)
+            end
+
+            local function update_from_input(input)
+                local sliderWidth = math.max(items[ "slider" ].AbsoluteSize.X, 1)
+                local offsetX = clamp(input.Position.X - items[ "slider" ].AbsolutePosition.X, 0, sliderWidth)
+                local ratio = offsetX / sliderWidth
+                local value = ((cfg.max - cfg.min) * ratio) + cfg.min
+                cfg.set(value)
+            end
 
             function cfg.set(value)
                 cfg.value = clamp(library:round(value, cfg.intervals), cfg.min, cfg.max)
 
-                library:tween(items[ "fill" ], {Size = dim2((cfg.value - cfg.min) / (cfg.max - cfg.min), cfg.value == cfg.min and 0 or -4, 0, 6)}, Enum.EasingStyle.Linear, 0.05)
+                local range = cfg.max - cfg.min
+                local ratio = range == 0 and 0 or clamp((cfg.value - cfg.min) / range, 0, 1)
+
+                library:tween(items[ "fill" ], {Size = dim2(ratio, 0, 0, 6), Position = dim2(0, 0, 0.5, 0)}, Enum.EasingStyle.Linear, 0.05)
+                library:tween(items[ "circle" ], {Position = dim2(ratio, 0, 0.5, 0)}, Enum.EasingStyle.Linear, 0.05)
+
                 items[ "value" ].Text = tostring(cfg.value) .. cfg.suffix
+                refresh_value_backing()
 
                 flags[cfg.flag] = cfg.value
                 cfg.callback(flags[cfg.flag])
             end
 
-            items[ "slider" ].MouseButton1Down:Connect(function()
-                cfg.dragging = true 
+            items[ "slider" ].InputBegan:Connect(function(input)
+                if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
+                    return
+                end
+
+                cfg.dragging = true
+                cfg.drag_kind = input.UserInputType
                 library:tween(items[ "value" ], {TextColor3 = rgb(255, 255, 255)}, Enum.EasingStyle.Quad, 0.2)
+                update_from_input(input)
             end)
 
             library:connection(uis.InputChanged, function(input)
-                if cfg.dragging and input.UserInputType == Enum.UserInputType.MouseMovement then 
-                    local size_x = (input.Position.X - items[ "slider" ].AbsolutePosition.X) / items[ "slider" ].AbsoluteSize.X
-                    local value = ((cfg.max - cfg.min) * size_x) + cfg.min
-                    cfg.set(value)
+                if not cfg.dragging then
+                    return
+                end
+
+                if cfg.drag_kind == Enum.UserInputType.MouseButton1 and input.UserInputType == Enum.UserInputType.MouseMovement then
+                    update_from_input(input)
+                elseif cfg.drag_kind == Enum.UserInputType.Touch and input.UserInputType == Enum.UserInputType.Touch then
+                    update_from_input(input)
                 end
             end)
 
             library:connection(uis.InputEnded, function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    cfg.dragging = false
-                    library:tween(items[ "value" ], {TextColor3 = rgb(242, 173, 79)}, Enum.EasingStyle.Quad, 0.2) 
-                end 
+                if not cfg.dragging or input.UserInputType ~= cfg.drag_kind then
+                    return
+                end
+
+                cfg.dragging = false
+                cfg.drag_kind = nil
+                library:tween(items[ "value" ], {TextColor3 = rgb(242, 173, 79)}, Enum.EasingStyle.Quad, 0.2) 
             end)
 
             if cfg.seperator then 
@@ -1972,7 +1983,7 @@
                 name = options.name or nil;
                 info = options.info or nil;
                 flag = options.flag or library:next_flag();
-                options = options.items or {""};
+                options = options.options or options.items or {""};
                 callback = options.callback or function() end;
                 multi = options.multi or false;
                 scrolling = options.scrolling or false;
@@ -1982,17 +1993,17 @@
                 height = options.height or (options.compact and 18 or 22);
                 dynamic = options.dynamic ~= false;
 
-                -- Ignore these 
                 open = false;
                 option_instances = {};
                 multi_items = {};
                 ignore = options.ignore or false;
                 items = {};
-                y_size;
+                y_size = 0;
+                option_height = options.optionHeight or 24;
                 seperator = options.seperator or options.Seperator or true;
             }   
 
-            cfg.default = options.default or (cfg.multi and {cfg.items[1]}) or cfg.items[1] or "None"
+            cfg.default = options.default or (cfg.multi and (cfg.options[1] and {cfg.options[1]} or {})) or cfg.options[1] or "None"
             flags[cfg.flag] = cfg.default
 
             local items = cfg.items; do 
@@ -2058,6 +2069,7 @@
                     items[ "right_components" ] = library:create( "Frame" , {
                         Parent = items[ "dropdown_object" ];
                         Name = "\0";
+                        BackgroundTransparency = 1;
                         Position = dim2(1, 0, 0, 0);
                         BorderColor3 = rgb(0, 0, 0);
                         Size = dim2(0, 0, 1, 0);
@@ -2098,10 +2110,10 @@
                         FontFace = fonts.small;
                         TextColor3 = rgb(232, 232, 235);
                         BorderColor3 = rgb(0, 0, 0);
-                        Text = "awdawdawdawdawdawdawdaw";
+                        Text = "Select...";
                         Parent = items[ "dropdown" ];
                         Name = "\0";
-                        Size = dim2(1, -20, 1, 0);
+                        Size = dim2(1, -28, 1, 0);
                         BorderSizePixel = 0;
                         BackgroundTransparency = 1;
                         TextXAlignment = Enum.TextXAlignment.Left;
@@ -2114,7 +2126,7 @@
                     
                     library:create( "UIPadding" , {
                         Parent = items[ "sub_text" ];
-                        PaddingRight = dim(0, 12);
+                        PaddingRight = dim(0, 18);
                         PaddingLeft = dim(0, 10)
                     });
                     
@@ -2125,7 +2137,7 @@
                         AnchorPoint = vec2(1, 0.5);
                         Image = "rbxassetid://101025591575185";
                         BackgroundTransparency = 1;
-                        Position = dim2(1, -7, 0.5, 0);
+                        Position = dim2(1, -10, 0.5, 0);
                         Name = "\0";
                         Size = dim2(0, cfg.compact and 11 or 12, 0, cfg.compact and 11 or 12);
                         BorderSizePixel = 0;
@@ -2138,7 +2150,7 @@
                         BorderColor3 = rgb(0, 0, 0);
                         Parent = library[ "items" ];
                         Name = "\0";
-                        Visible = true;
+                        Visible = false;
                         BackgroundTransparency = 1;
                         Size = dim2(0, 0, 0, 0);
                         BorderSizePixel = 0;
@@ -2156,14 +2168,15 @@
                         ZIndex = 10;
                     });
                     
-                    library:create( "UIPadding" , {
+                    items[ "outline_padding" ] = library:create( "UIPadding" , {
                         PaddingBottom = dim(0, 6);
                         PaddingTop = dim(0, 3);
                         PaddingLeft = dim(0, 3);
+                        PaddingRight = dim(0, 3);
                         Parent = items[ "outline" ]
                     });
                     
-                    library:create( "UIListLayout" , {
+                    items[ "outline_layout" ] = library:create( "UIListLayout" , {
                         Parent = items[ "outline" ];
                         Padding = dim(0, 5);
                         SortOrder = Enum.SortOrder.LayoutOrder
@@ -2181,24 +2194,26 @@
                     FontFace = fonts.small;
                     TextColor3 = rgb(72, 72, 73);
                     BorderColor3 = rgb(0, 0, 0);
-                    Text = text;
+                    Text = tostring(text);
                     Parent = items[ "outline" ];
                     Name = "\0";
-                    Size = dim2(1, -12, 0, 0);
+                    Size = dim2(1, -6, 0, cfg.option_height);
                     BackgroundTransparency = 1;
                     TextXAlignment = Enum.TextXAlignment.Left;
+                    TextYAlignment = Enum.TextYAlignment.Center;
+                    TextTruncate = Enum.TextTruncate.AtEnd;
                     BorderSizePixel = 0;
-                    AutomaticSize = Enum.AutomaticSize.Y;
-                    TextSize = 14;
+                    AutomaticSize = Enum.AutomaticSize.None;
+                    TextSize = 13;
                     BackgroundColor3 = rgb(255, 255, 255);
                     ZIndex = 10;
+                    AutoButtonColor = false;
                 }); library:apply_theme(button, "accent", "TextColor3");
                 
                 library:create( "UIPadding" , {
                     Parent = button;
-                    PaddingTop = dim(0, 1);
-                    PaddingRight = dim(0, 5);
-                    PaddingLeft = dim(0, 5)
+                    PaddingRight = dim(0, 6);
+                    PaddingLeft = dim(0, 6)
                 });
                 
                 return button
@@ -2210,21 +2225,48 @@
                     return
                 end
 
-                local reserve = cfg.compact and 36 or 40
+                local reserve = cfg.compact and 38 or 44
                 local measured = items[ "sub_text" ].TextBounds.X + reserve
                 local rowWidth = (items[ "dropdown_object" ] and items[ "dropdown_object" ].AbsoluteSize.X) or 0
-                local maxWidth = rowWidth > 0 and math.max(cfg.width, math.floor(rowWidth * 0.62)) or math.max(cfg.width, 220)
+                local maxWidth = rowWidth > 0 and math.max(cfg.width, rowWidth - 8) or math.max(cfg.width, 220)
                 local desired = math.max(cfg.width, math.min(maxWidth, measured))
                 items[ "dropdown" ].Size = dim2(0, desired, 0, cfg.height)
             end
 
-            function cfg.set_visible(bool)
-                local a = bool and cfg.y_size or 0
-                library:tween(items[ "dropdown_holder" ], {Size = dim_offset(items[ "dropdown" ].AbsoluteSize.X, a)})
+            local function position_dropdown_holder(height)
+                local currentCamera = ws.CurrentCamera or camera
+                local viewport = currentCamera and currentCamera.ViewportSize or vec2(1280, 720)
+                local dropdownWidth = (items[ "dropdown" ].AbsoluteSize.X > 0 and items[ "dropdown" ].AbsoluteSize.X) or items[ "dropdown" ].Size.X.Offset
+                local dropdownPos = items[ "dropdown" ].AbsolutePosition
+                local dropdownSize = items[ "dropdown" ].AbsoluteSize
+                local targetHeight = height or cfg.y_size or 0
+                local margin = 8
 
-                items[ "dropdown_holder" ].Position = dim2(0, items[ "dropdown" ].AbsolutePosition.X, 0, items[ "dropdown" ].AbsolutePosition.Y + 80)
-                if not (self.sanity and library.current_open == self) then 
+                local x = clamp(dropdownPos.X, margin, math.max(margin, viewport.X - dropdownWidth - margin))
+                local belowY = dropdownPos.Y + dropdownSize.Y + 6
+                local aboveY = dropdownPos.Y - targetHeight - 6
+                local y = belowY
+
+                if targetHeight > 0 and belowY + targetHeight > viewport.Y - margin and aboveY >= margin then
+                    y = aboveY
+                end
+
+                y = clamp(y, margin, math.max(margin, viewport.Y - targetHeight - margin))
+                items[ "dropdown_holder" ].Position = dim_offset(x, y)
+            end
+
+            function cfg.set_visible(bool)
+                refresh_dropdown_width()
+
+                local popupHeight = bool and cfg.y_size or 0
+                items[ "dropdown_holder" ].Visible = popupHeight > 0
+                items[ "dropdown_holder" ].Size = dim_offset(items[ "dropdown" ].AbsoluteSize.X, popupHeight)
+                position_dropdown_holder(popupHeight)
+
+                if bool then
                     library:close_element(cfg)
+                elseif library.current_open == cfg then
+                    library.current_open = nil
                 end
             end
             
@@ -2235,32 +2277,39 @@
                 for _, option in cfg.option_instances do 
                     if option.Text == value or (isTable and find(value, option.Text)) then 
                         insert(selected, option.Text)
-                        cfg.multi_items = selected
                         option.TextColor3 = themes.preset.accent
                     else
                         option.TextColor3 = rgb(72, 72, 73)
                     end
                 end
 
-                items[ "sub_text" ].Text = isTable and concat(selected, ", ") or selected[1] or ""
+                if isTable then
+                    cfg.multi_items = selected
+                end
+
+                local selectedText = isTable and concat(selected, ", ") or selected[1] or ""
+                items[ "sub_text" ].Text = selectedText ~= "" and selectedText or "Select..."
                 refresh_dropdown_width()
+
+                if cfg.open then
+                    cfg.set_visible(true)
+                end
+
                 flags[cfg.flag] = isTable and selected or selected[1]
                 
                 cfg.callback(flags[cfg.flag]) 
             end
             
             function cfg.refresh_options(list) 
-                cfg.y_size = 0
-
                 for _, option in cfg.option_instances do 
                     option:Destroy() 
                 end
                 
-                cfg.option_instances = {} 
+                cfg.option_instances = {}
+                cfg.options = list or {}
 
-                for _, option in list do 
+                for _, option in cfg.options do 
                     local button = cfg.render_option(option)
-                    cfg.y_size += button.AbsoluteSize.Y + 6 -- super annoying manual sizing but oh well
                     insert(cfg.option_instances, button)
                     
                     button.MouseButton1Down:Connect(function()
@@ -2275,12 +2324,18 @@
                             
                             cfg.set(cfg.multi_items) 				
                         else 
-                            cfg.set_visible(false)
                             cfg.open = false 
-                            
+                            cfg.set_visible(false)
                             cfg.set(button.Text)
                         end
                     end)
+                end
+
+                local optionCount = #cfg.option_instances
+                cfg.y_size = optionCount > 0 and ((cfg.option_height * optionCount) + (math.max(optionCount - 1, 0) * 5) + 9) or 0
+
+                if cfg.open then
+                    cfg.set_visible(true)
                 end
             end
 
@@ -2288,6 +2343,13 @@
                 cfg.open = not cfg.open 
                 
                 cfg.set_visible(cfg.open)
+            end)
+
+            library:connection(items[ "dropdown_object" ]:GetPropertyChangedSignal("AbsoluteSize"), function()
+                refresh_dropdown_width()
+                if cfg.open then
+                    cfg.set_visible(true)
+                end
             end)
 
             if cfg.seperator then 
